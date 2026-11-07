@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Delivery Time Predictor - ML Web App</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍔</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1E3A8A;
+      --primary-light: #EFF6FF;
+      --accent: #EA580C;
+      --success: #059669;
+      --warning: #D97706;
+      --slate-50: #F8FAFC;
+      --slate-100: #F1F5F9;
+      --slate-200: #E2E8F0;
+      --slate-300: #CBD5E1;
+      --slate-500: #64748B;
+      --slate-700: #334155;
+      --slate-900: #0F172A;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #F8FAFC;
+      color: var(--slate-900);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--slate-700);
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      transition: all 0.2s ease;
+    }
+
+    .btn-link:hover {
+      background: var(--slate-200);
+      color: var(--slate-900);
+    }
+
+    .btn-github {
+      background: #24292F;
+      color: white;
+      border-color: #24292F;
+    }
+
+    .btn-github:hover {
+      background: #000000;
+      color: white;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      flex: 1;
+    }
+
+    /* Intro Hero */
+    .hero-banner {
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      border: 1px solid #BFDBFE;
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .hero-content h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-content p {
+      font-size: 1rem;
+      color: var(--slate-700);
+      max-width: 680px;
+    }
+
+    .hero-metrics {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .metric-pill {
+      background: white;
+      border: 1px solid #BFDBFE;
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.05);
+    }
+
+    .metric-pill-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-pill-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--slate-200);
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid Layouts */
+    .grid-prediction {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-prediction {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Form Card */
+    .card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      margin-top: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-label span.val {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      border: 1px solid var(--slate-300);
+      border-radius: 8px;
+      background-color: white;
+      color: var(--slate-900);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="number"]:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-predict {
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-predict:hover {
+      background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-predict:active {
+      transform: translateY(0);
+    }
+
+    /* Result Card */
+    .result-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .prediction-card {
+      background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .prediction-card::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+    }
+
+    .pred-header {
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+    }
+
+    .pred-number {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1;
+      margin: 0.75rem 0 0.5rem 0;
+      letter-spacing: -0.03em;
+    }
+
+    .pred-unit {
+      font-size: 1.6rem;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .pred-window {
+      font-size: 1rem;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .summary-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .summary-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      font-size: 0.92rem;
+      color: var(--slate-700);
+    }
+
+    .summary-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .summary-list strong {
+      color: var(--slate-900);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .status-fast {
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+    }
+
+    .status-medium {
+      background: #EFF6FF;
+      color: #1E40AF;
+      border: 1px solid #BFDBFE;
+    }
+
+    .status-slow {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FDE68A;
+    }
+
+    /* Comparison Table */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 1.25rem 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    th {
+      background-color: var(--slate-50);
+      font-weight: 700;
+      color: var(--slate-700);
+    }
+
+    tr:hover {
+      background-color: var(--slate-50);
+    }
+
+    .rank-winner {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Plots Grid */
+    .plots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .plots-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plot-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+    }
+
+    .plot-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+
+    .plot-card img:hover {
+      transform: scale(1.02);
+    }
+
+    .plot-card p {
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      font-weight: 600;
+    }
+
+    /* About Section */
+    .about-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      line-height: 1.7;
+    }
+
+    .about-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin: 1.25rem 0 0.5rem 0;
+    }
+
+    .about-card h3:first-child {
+      margin-top: 0;
+    }
+
+    .about-card p, .about-card ul {
+      color: var(--slate-700);
+      margin-bottom: 1rem;
+    }
+
+    .about-card ul {
+      padding-left: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      background: white;
+      border-top: 1px solid var(--slate-200);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-icon">🍔</span>
+        <div>
+          <span class="brand-title">Food Delivery Time Predictor</span>
+          <span class="brand-badge">ML Regression</span>
+        </div>
+      </div>
+      <div class="header-links">
+        <a href="https://github.com/Rohith1833/Mini_Project2" target="_blank" class="btn-link btn-github">
+          <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+          GitHub Repository
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main>
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="hero-content">
+        <h1>Predict Order Delivery Time</h1>
+        <p>Real-time machine learning inference based on travel distance (Haversine formula), road traffic, weather conditions, and courier ratings.</p>
+      </div>
+      <div class="hero-metrics">
+        <div class="metric-pill">
+          <div class="metric-pill-title">Best Model</div>
+          <div class="metric-pill-value">Random Forest</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-pill-title">Mean Error (MAE)</div>
+          <div class="metric-pill-value">3.68 mins</div>
+        </div>
+        <div class="metric-pill">
+          <div class="metric-pill-title">Accuracy ($R^2$)</div>
+          <div class="metric-pill-value">74.5%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs Navigation -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('predict')">🚀 Predict Delivery Time</button>
+      <button class="tab-btn" onclick="switchTab('comparison')">📊 Model Comparison & Plots</button>
+      <button class="tab-btn" onclick="switchTab('about')">📖 About Project</button>
+    </nav>
+
+    <!-- TAB 1: PREDICTION -->
+    <div id="tab-predict" class="tab-pane active">
+      <div class="grid-prediction">
+        
+        <!-- Input Form -->
+        <div class="card">
+          <div class="card-title">
+            <span>📝</span> Enter Order & Logistics Parameters
+          </div>
+
+          <form id="prediction-form" onsubmit="handlePredict(event)">
+            <!-- Courier Info -->
+            <div class="form-group-title">🚴 Courier Information</div>
+            <div class="form-row">
+              <div class="form-control">
+                <label class="form-label" for="age">Courier Age: <span class="val" id="age-val">28</span> yrs</label>
+                <input type="range" id="age" min="18" max="50" value="28" oninput="updateRange('age', 'age-val', ' yrs')">
+              </div>
+              <div class="form-control">
+                <label class="form-label" for="rating">Courier Rating: <span class="val" id="rating-val">4.7</span> ⭐</label>
+                <input type="range" id="rating" min="1.0" max="5.0" step="0.1" value="4.7" oninput="updateRange('rating', 'rating-val', ' ⭐')">
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label class="form-label" for="vehicle">Delivery Vehicle Mode</label>
+              <select id="vehicle">
+                <option value="motorcycle" selected>Motorcycle</option>
+                <option value="scooter">Scooter</option>
+                <option value="electric_scooter">Electric Scooter</option>
+              </select>
+            </div>
+
+            <!-- Route & Traffic -->
+            <div class="form-group-title">📍 Route & Traffic</div>
+            <div class="form-row">
+              <div class="form-control">
+                <label class="form-label" for="distance">Distance (km)</label>
+                <input type="number" id="distance" min="0.5" max="40.0" step="0.1" value="5.5" required>
+              </div>
+              <div class="form-control">
+                <label class="form-label" for="traffic">Road Traffic Density</label>
+                <select id="traffic">
+                  <option value="Low">Low Traffic</option>
+                  <option value="Medium" selected>Medium Traffic</option>
+                  <option value="High">High Traffic</option>
+                  <option value="Jam">Traffic Jam</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Weather & Order -->
+            <div class="form-group-title">🌦️ Context & Order</div>
+            <div class="form-row">
+              <div class="form-control">
+                <label class="form-label" for="weather">Weather Condition</label>
+                <select id="weather">
+                  <option value="Sunny" selected>Sunny</option>
+                  <option value="Cloudy">Cloudy</option>
+                  <option value="Windy">Windy</option>
+                  <option value="Fog">Fog</option>
+                  <option value="Sandstorms">Sandstorms</option>
+                  <option value="Stormy">Stormy</option>
+                </select>
+              </div>
+              <div class="form-control">
+                <label class="form-label" for="order_type">Type of Order</label>
+                <select id="order_type">
+                  <option value="Snack">Snack</option>
+                  <option value="Meal" selected>Meal</option>
+                  <option value="Drinks">Drinks</option>
+                  <option value="Buffet">Buffet</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-predict">
+              <span>⚡</span> Predict Delivery Time
+            </button>
+          </form>
+        </div>
+
+        <!-- Output Prediction -->
+        <div class="result-container">
+          <div class="prediction-card">
+            <div class="pred-header">Estimated Arrival Time</div>
+            <div class="pred-number" id="pred-minutes">18 <span class="pred-unit">mins</span></div>
+            <div class="pred-window" id="pred-window">Expected window: 15 – 21 minutes</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="summary-title">📋 Trip Parameters</div>
+            <ul class="summary-list">
+              <li><span>Physical Distance:</span> <strong id="sum-dist">5.5 km</strong></li>
+              <li><span>Traffic Level:</span> <strong id="sum-traffic">Medium</strong></li>
+              <li><span>Weather:</span> <strong id="sum-weather">Sunny</strong></li>
+              <li><span>Courier Profile:</span> <strong id="sum-courier">Motorcycle (28 yrs, 4.7⭐)</strong></li>
+              <li><span>Order Type:</span> <strong id="sum-order">Meal</strong></li>
+            </ul>
+            <div id="status-pill" class="status-badge status-fast">
+              🟢 Fast Delivery expected! Optimal road conditions.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: MODEL COMPARISON & PLOTS -->
+    <div id="tab-comparison" class="tab-pane">
+      <div class="card">
+        <div class="card-title">
+          <span>📈</span> Model Benchmarking on 80/20 Test Set (8,022 Samples)
+        </div>
+        <p style="color: var(--slate-500); font-size: 0.9rem;">
+          Models evaluated using Scikit-Learn regression metrics: Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), and Coefficient of Determination ($R^2$).
+        </p>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Model Architecture</th>
+                <th>MAE (Mean Absolute Error)</th>
+                <th>RMSE (Root Mean Squared Error)</th>
+                <th>$R^2$ Score (Variance Explained)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="rank-winner">
+                <td>🥇 Winner</td>
+                <td>Random Forest Regressor</td>
+                <td>3.681 min</td>
+                <td>4.699 min</td>
+                <td>0.7449 (74.5%)</td>
+              </tr>
+              <tr>
+                <td>🥈 Runner-up</td>
+                <td>Gradient Boosting Regressor</td>
+                <td>3.686 min</td>
+                <td>4.674 min</td>
+                <td>0.7476 (74.8%)</td>
+              </tr>
+              <tr>
+                <td>🥉 Baseline</td>
+                <td>Linear Regression</td>
+                <td>5.256 min</td>
+                <td>6.649 min</td>
+                <td>0.4891 (48.9%)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-title" style="margin-top: 2rem;">
+          <span>🖼️</span> Diagnostic Visualizations
+        </div>
+        <div class="plots-grid">
+          <div class="plot-card">
+            <img src="outputs/actual_vs_predicted.png" alt="Actual vs Predicted Delivery Time">
+            <p>Actual vs Predicted Delivery Time (Linear $y=x$ fit)</p>
+          </div>
+          <div class="plot-card">
+            <img src="outputs/residual_distribution.png" alt="Residual Error Distribution">
+            <p>Residual Error Distribution (Centering near 0)</p>
+          </div>
+          <div class="plot-card">
+            <img src="outputs/feature_importance.png" alt="Top 10 Feature Importances">
+            <p>Top 10 Feature Importances</p>
+          </div>
+          <div class="plot-card">
+            <img src="outputs/time_vs_distance.png" alt="Delivery Time vs Distance">
+            <p>Delivery Time vs Physical Distance (km)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ABOUT PROJECT -->
+    <div id="tab-about" class="tab-pane">
+      <div class="about-card">
+        <h3>🎯 Project Objective</h3>
+        <p>Develop an end-to-end Machine Learning regression system to forecast food delivery turnaround times (ETA in minutes) for logistics platforms like Zomato and Swiggy.</p>
+
+        <h3>⚙️ Machine Learning Pipeline</h3>
+        <ul>
+          <li><strong>Data Sanitization:</strong> Stripped string artifacts (e.g. <code>(min)</code> and <code>conditions </code>), handled null values, and corrected negative GPS coordinate logging errors.</li>
+          <li><strong>Spatial Feature Engineering:</strong> Converted latitude and longitude pairs into accurate physical distance in kilometers using the spherical <strong>Haversine Formula</strong>.</li>
+          <li><strong>Scikit-Learn Pipeline:</strong> Categorical features encoded with <code>OneHotEncoder</code>, numerical metrics normalized with <code>StandardScaler</code>.</li>
+          <li><strong>Model Serialization:</strong> Pretrained pipeline saved via <code>joblib</code> and lightweight client engine embedded for instant zero-server deployment.</li>
+        </ul>
+
+        <h3>💡 Top Predictors Discovered</h3>
+        <ul>
+          <li><strong>Courier Rating (24.97%):</strong> Top-rated delivery partners complete orders significantly faster.</li>
+          <li><strong>Transit Distance (16.77%):</strong> Direct physical determinant of travel time.</li>
+          <li><strong>Road Traffic Density (14.41%):</strong> Severe delays during Jam vs unimpeded Low traffic.</li>
+          <li><strong>Courier Age (13.57%):</strong> Correlates with delivery stamina and navigation experience.</li>
+        </ul>
+
+        <h3>📁 Documentation & Reports</h3>
+        <p>
+          Detailed 1-page college project report available in <code>REPORT.md</code> and full pipeline code in <code>src/train.py</code> and <code>app.py</code>.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Food Delivery Time Predictor • Machine Learning Mini Project • Deployed on Netlify & GitHub</p>
+  </footer>
+
+  <!-- Client-side ML Model Script -->
+  <script src="app.js"></script>
+  <script>
+    function updateRange(id, targetId, suffix) {
+      document.getElementById(targetId).innerText = document.getElementById(id).value + suffix;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+      if (tabName === 'predict') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-predict').classList.add('active');
+      } else if (tabName === 'comparison') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-comparison').classList.add('active');
+      } else if (tabName === 'about') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('tab-about').classList.add('active');
+      }
+    }
+
+    function handlePredict(e) {
+      e.preventDefault();
+
+      const age = parseFloat(document.getElementById('age').value);
+      const rating = parseFloat(document.getElementById('rating').value);
+      const vehicle = document.getElementById('vehicle').value;
+      const distance = parseFloat(document.getElementById('distance').value);
+      const traffic = document.getElementById('traffic').value;
+      const weather = document.getElementById('weather').value;
+      const orderType = document.getElementById('order_type').value;
+
+      const input = {
+        'Delivery_person_Age': age,
+        'Delivery_person_Ratings': rating,
+        'distance_km': distance,
+        'Weatherconditions': weather,
+        'Road_traffic_density': traffic,
+        'Type_of_order': orderType,
+        'Type_of_vehicle': vehicle
+      };
+
+      const estMins = predictDeliveryTime(input);
+      const low = Math.max(10, estMins - 3);
+      const high = estMins + 3;
+
+      document.getElementById('pred-minutes').innerHTML = `${estMins} <span class="pred-unit">mins</span>`;
+      document.getElementById('pred-window').innerText = `Expected window: ${low} – ${high} minutes`;
+
+      document.getElementById('sum-dist').innerText = `${distance} km`;
+      document.getElementById('sum-traffic').innerText = traffic;
+      document.getElementById('sum-weather').innerText = weather;
+      document.getElementById('sum-courier').innerText = `${vehicle.charAt(0).toUpperCase() + vehicle.slice(1)} (${age} yrs, ${rating}⭐)`;
+      document.getElementById('sum-order').innerText = orderType;
+
+      const pill = document.getElementById('status-pill');
+      if (estMins <= 22) {
+        pill.className = 'status-badge status-fast';
+        pill.innerText = '🟢 Fast Delivery expected! Optimal road conditions.';
+      } else if (estMins <= 35) {
+        pill.className = 'status-badge status-medium';
+        pill.innerText = '🟡 Standard delivery window. Normal transit traffic.';
+      } else {
+        pill.className = 'status-badge status-slow';
+        pill.innerText = '🔴 Delay expected due to severe weather or heavy traffic.';
+      }
+    }
+
+    // Run initial prediction on load
+    window.addEventListener('DOMContentLoaded', () => {
+      handlePredict({ preventDefault: () => {} });
+    });
+  </script>
+</body>
+</html>

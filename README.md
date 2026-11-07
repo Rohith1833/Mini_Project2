@@ -149,18 +149,42 @@ Open `http://localhost:8501` in your browser.
 
 ---
 
+## 🌐 Production Deployment
+
+This project supports two production deployment options:
+
+### Option A: Deploy to Netlify (Instant, Zero Server)
+The repository includes a production-ready client web application (`index.html` + `app.js` + `netlify.toml`) with an embedded client-side decision tree inference engine:
+1. Go to [Netlify](https://app.netlify.com/) and log in with your GitHub account.
+2. Click **"Add new site"** &gt; **"Import an existing project"**.
+3. Select **GitHub** and choose the repository `Mini_Project2`.
+4. Leave the **Build command** empty and **Publish directory** as `.` (or root).
+5. Click **"Deploy site"**. Netlify will launch your live web app in ~10 seconds with a public `https://<site-name>.netlify.app` URL.
+
+### Option B: Deploy to Streamlit Community Cloud (Python Server)
+To deploy the Python Streamlit app (`app.py`):
+1. Go to [share.streamlit.io](https://share.streamlit.io/) and log in with GitHub.
+2. Click **"New app"**, select `Mini_Project2`, branch `main`, and main file `app.py`.
+3. Click **"Deploy!"** to get a live `https://<app-name>.streamlit.app` link.
+
+---
+
 ## 📁 Project Structure
 
 ```
-Miniproject2/
-├── app.py                     # Interactive Streamlit Web Application
-├── requirements.txt           # Project dependencies
+Mini_Project2/
+├── index.html                 # Production Netlify Web Application
+├── app.js                     # Client-side ML inference engine (Gradient Boosting)
+├── netlify.toml               # Netlify build and security configuration
+├── .gitignore                 # Production Git ignore rules
+├── app.py                     # Streamlit Python Web Application
+├── requirements.txt           # Project Python dependencies
 ├── README.md                  # Comprehensive project documentation
 ├── REPORT.md                  # Academic/College project report
 ├── data/
 │   └── train.csv              # Cleaned food delivery dataset
 ├── models/
-│   ├── best_model.joblib      # Saved scikit-learn best model pipeline
+│   ├── best_model.joblib      # Saved scikit-learn best model pipeline (Random Forest)
 │   └── model_metadata.joblib  # Feature definitions and model metadata
 ├── outputs/
 │   ├── model_comparison.csv   # Benchmark table comparing LR, RF, GBR
