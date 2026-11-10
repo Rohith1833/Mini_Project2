@@ -1,4 +1,7 @@
 [build]
+  # Static site: index.html + app.js + model_web.json, no build step needed.
+  # Overrides the interactive `npm init` command set in the Netlify UI.
+  command = "echo 'No build step required'"
   publish = "."
 
 [[headers]]
